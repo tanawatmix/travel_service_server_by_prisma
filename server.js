@@ -1,26 +1,37 @@
-const express = require('express');
-const cors = require('cors');
-const travellerRoute = require("./routes/traveller.route")
-const travelRoute = require("./routes/travel.route")
+const express = require("express"); // call express module to create web server
+require("dotenv").config(); // call to use .env
 
-require('dotenv').config();
+const cors = require("cors");
+const travellerRoute = require("./routes/traveller.route"); // call to use router module
+const travelRoute = require("./routes/travel.route");
 
-const app = express();
+//++++++++++++++++++ CREATE WEB SERVER +++++++++++++++++++
 
-const PORT = process.env.PORT || 3000;
+const app = express(); // create web server
+//Default is port 5000
+const PORT = process.env.PORT || 5000;
 
-app.use(cors());//จัดการการใช้งานข้ามโดเมน
-app.use(express.json());//จัดรูปแบบข้อมูลในการทรับส่งที่เป็น json
-app.use('/travel', travelRoute);
-app.use('/traveller', travellerRoute);
+//Use middleware to various management++++++++++++++++++++++
+app.use(cors());//allow access from any domain
+app.use(express.json())
 
+//++++++++++++66++++ APP USE +++++++++++++++++++++++++++++++
 
-app.get('/', (req, res) => {
-  res.json({ message: 'Hello World!' });
+//use router module=================
+app.use("/traveller", travellerRoute); 
+app.use("/travel", travelRoute);
+//Access to image folder path================
+app.use("/images/traveller", express.static("images/traveller"));
+app.use("/images/travel", express.static("images/travel"));
+
+//++++++++++++++++ test call web server +++++++++++++++++++
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from server port " + PORT + " by prisma" }); //send message
 });
 
-
+//++++++++create web server connection from client/user++++++++++++
 app.listen(PORT, () => {
-  console.log("Server is running on port" +PORT + "....");
+  console.log("Server is running on port " + PORT);
 });
 
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
