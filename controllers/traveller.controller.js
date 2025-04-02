@@ -11,6 +11,16 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
+//cloudinary
+const {v2: Cloudinary} = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+
+// Configuration
+cloudinary.config({ 
+  cloud_name: 'dm1gazghg', 
+  api_key: '627789634965329', 
+  api_secret: 'GkkpMLsFB9o_XaefuhcMpRjlHBE' // Click 'View API Keys' above to copy your API secret
+});
 
 //--------------------------------------------------------------------------------
 //register traveller
@@ -176,12 +186,26 @@ exports.deleteTraveller = async (req, res) => {
 
 
 //Traveller Image upload function
-const storage = multer .diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'images/traveller')
-    },
-    filename: function (req, file, cb) {
-        cb(null, 'traveller_' + Math.floor(Math.random() * Date.now()) + path.extname(file.originalname))
+// const storage = multer .diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, 'images/traveller')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, 'traveller_' + Math.floor(Math.random() * Date.now()) + path.extname(file.originalname))
+//     }
+// })
+const storage = new cloudinaryStorage({
+    cloudinary: Cloudinary,
+    params: async (req, file) => {
+      //filename
+      const newfile = 'traveller_' + Math.floor(Math.random() * Date.now());
+
+      //กำหนดตำแหน่ง
+      return {
+        folder: 'images/traveller',
+        allowed_formats: ['jpg', 'png', 'jpeg'],
+        public_id: newfile
+      }
     }
 })
 
@@ -195,7 +219,7 @@ exports.uploadTraveller = multer({
         fileSize: 1000000
     },
     fileFilter: (req, file, cb) => {
-        const fileTypes = /jpeg|jpg|png|gif/;
+        const fileTypes = /jpeg|jpg|png/;
         const mimetype = fileTypes.test(file.mimetype);
         const extname = fileTypes.test(path.extname(file.originalname));
         if (mimetype && extname) {
