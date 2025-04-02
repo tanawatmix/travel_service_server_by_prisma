@@ -9,7 +9,7 @@ const travelRoute = require("./routes/travel.route");
 
 const app = express(); // create web server
 //Default is port 5000
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 //Use middleware to various management++++++++++++++++++++++
 app.use(cors());//allow access from any domain
