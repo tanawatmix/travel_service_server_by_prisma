@@ -7,20 +7,34 @@ const fs = require("fs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+//cloudinary
+const {v2: Cloudinary} = require("cloudinary");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 //Travel Image upload function================================================
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "images/travel");
-  },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      "travel_" +
-        Math.floor(Math.random() * Date.now()) +
-        path.extname(file.originalname)
-    );
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "images/travel");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(
+//       null,
+//       "travel_" +
+//         Math.floor(Math.random() * Date.now()) +
+//         path.extname(file.originalname)
+//     );
+//   },
+// });
+
+const storage = new CloudinaryStorage({
+  cloudinary: Cloudinary,
+  params: {
+    folder: "images/travel",
+    allowed_formats: ["jpg", "png", "jpeg"],
+    public_id: () => 'travel_' + Math.floor(Math.random() * Date.now()),
   },
 });
+
 exports.uploadTravel = multer({
   storage: storage,
   limits: {
